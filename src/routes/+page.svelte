@@ -1,6 +1,7 @@
 <script>
     let content = '';
     let responseId = '';
+    let contentType = 'application/json';
 
     async function handleSubmit() {
         const response = await fetch(import.meta.env.VITE_BE_HOST + '/api/mocks', {
@@ -8,27 +9,39 @@
             headers: {
                 'Content-Type': 'application/json'
             },
-            body: JSON.stringify({ content })
+            body: JSON.stringify({content, type: contentType})
         });
 
         if (response.ok) {
-            const data = await response.json(); // Parse the response as JSON
-            responseId = data.id; // Extract the ID from the response
-            console.log('Content submitted successfully');
-            console.log(responseId); // Log the response ID
+            const data = await response.json();
+            responseId = data.id;
         } else {
             console.error('Error submitting content');
         }
+    }
+
+    function handleNew() {
+        content = '';
+        document.getElementById('content').focus();
     }
 </script>
 
 <form on:submit|preventDefault={handleSubmit}>
     <label for="content">Content:</label>
     <textarea id="content" bind:value={content} rows="10" cols="50"></textarea>
-    <button type="submit">Create</button>
+
+    <label for="contentType">Content Type:</label>
+    <select id="contentType" bind:value={contentType}>
+        <option value="text/plain">Text</option>
+        <option value="application/json">JSON</option>
+    </select>
+
+    <div style="margin-top: 10px;">
+        <button type="submit">Create</button>
+        <button type="button" on:click={handleNew}>New</button>
+    </div>
 </form>
 
-<!-- Display the response ID after submission -->
 {#if responseId}
     <section class="response-id-section">
         <div class="highlight-id">{import.meta.env.VITE_BE_HOST + "/api/mocks/" + responseId}</div>
@@ -65,6 +78,14 @@
         margin-bottom: 20px;
     }
 
+    select {
+        padding: 10px;
+        font-size: 1em;
+        border: 1px solid #ccc;
+        border-radius: 4px;
+        margin-bottom: 20px;
+    }
+
     button {
         padding: 10px 15px;
         font-size: 1.1em;
@@ -91,13 +112,6 @@
         border-radius: 8px;
         background-color: #e8f5e9;
         text-align: center;
-    }
-
-    .response-id-section p {
-        font-size: 1.2em;
-        font-weight: bold;
-        color: #4CAF50;
-        margin-bottom: 10px;
     }
 
     .highlight-id {
