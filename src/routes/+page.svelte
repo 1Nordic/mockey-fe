@@ -31,7 +31,7 @@
 <!-- Display the response ID after submission -->
 {#if responseId}
     <section class="response-id-section">
-        <div class="highlight-id">{responseId}</div>
+        <div class="highlight-id">{import.meta.env.VITE_BE_HOST + "/api/mocks/" + responseId}</div>
     </section>
 {/if}
 
